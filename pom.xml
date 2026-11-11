@@ -12,7 +12,7 @@
 	</parent>
 
     <groupId>ru.os</groupId>
-    <artifactId>booking</artifactId>
+    <artifactId>bookingapp</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -32,6 +32,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- db -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- misc -->

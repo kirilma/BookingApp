@@ -12,8 +12,8 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /booking/app
 
 RUN addgroup -S spring && adduser -S booking -G spring
+COPY --from=build --chown=booking:spring /booking/build/target/booking.jar ./app.jar
 USER booking:spring
-COPY --from=build /booking/build/target/booking.jar ./app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
