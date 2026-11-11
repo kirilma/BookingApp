@@ -13,6 +13,7 @@ WORKDIR /booking/app
 
 RUN addgroup -S spring && adduser -S booking -G spring
 COPY --from=build --chown=booking:spring /booking/build/target/booking.jar ./app.jar
+RUN mkdir -p /booking/data && chown -R booking:spring /booking/data
 USER booking:spring
 
 EXPOSE 8080
