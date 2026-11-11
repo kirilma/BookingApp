@@ -18,7 +18,9 @@ public class BookingService {
 
     @Transactional
     public Booking create(String name, String phone, LocalDate date, LocalTime time, Integer guests) {
-        return null;
+        var booking = new Booking(name, phone, date, time, guests);
+        repository.save(booking);
+        return booking;
     }
 
     @Transactional(readOnly = true)

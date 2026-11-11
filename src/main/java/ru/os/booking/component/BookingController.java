@@ -26,7 +26,14 @@ public class BookingController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public BookingCreatedResponse create(BookingCreateRequest request) {
-        return null;
+        var name = request.name();
+        var phone = request.phone();
+        var date = request.date();
+        var time = request.time();
+        var guests = request.guests();
+        var booking = service.create(name, phone, date, time, guests);
+        var response = mapper.toCreated(booking);
+        return response;
     }
 
     @ResponseStatus(HttpStatus.OK)
