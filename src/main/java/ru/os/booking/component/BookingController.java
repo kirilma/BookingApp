@@ -3,6 +3,7 @@ package ru.os.booking.component;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,7 +39,7 @@ public class BookingController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public BookingInfoResponse read(long id) {
+    public BookingInfoResponse read(@PathVariable Long id) {
         var booking = service.get(id);
         var response = mapper.toInfo(booking);
         return response;
@@ -46,7 +47,9 @@ public class BookingController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
-    public BookingInfoResponse delete(long id) {
-        return null;
+    public BookingInfoResponse delete(@PathVariable Long id) {
+        var booking = service.cancel(id);
+        var response = mapper.toInfo(booking);
+        return response;
     }
 }

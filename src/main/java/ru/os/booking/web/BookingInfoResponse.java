@@ -1,5 +1,6 @@
 package ru.os.booking.web;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -11,6 +12,7 @@ public record BookingInfoResponse(
         String phone,
         LocalDate date,
         LocalTime time,
+        Integer guests,
         BookingStatus status,
-        Integer guests
+        Instant createdAt
 ) {}

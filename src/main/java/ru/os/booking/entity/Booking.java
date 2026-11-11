@@ -1,5 +1,6 @@
 package ru.os.booking.entity;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -37,7 +38,10 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private BookingStatus status;
+    private BookingStatus status = BookingStatus.ACTIVE;
+
+    @Column(name = "createdAt")
+    private Instant createdAt = Instant.now();
 
     public Booking(String name, String phone, LocalDate date, LocalTime time, Integer guests) {
         this.name = name;
@@ -45,11 +49,10 @@ public class Booking {
         this.date = date;
         this.time = time;
         this.guests = guests;
-        this.status = BookingStatus.ACTIVE;
     }
 
     public void cancel() {
-        if (this.status != BookingStatus.ACTIVE) {
+        if (this.status == BookingStatus.CANCELLED) {
             throw new RuntimeException();
         }
         this.status = BookingStatus.CANCELLED;
