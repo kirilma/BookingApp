@@ -14,10 +14,20 @@ import ru.os.booking.entity.Booking;
 @Service
 public class BookingService {
 
+    private static final int GUEST_LIMIT = 12;
+    private static final int SLOT_LIMIT = 10;
+
     private final BookingRepository repository;
 
     @Transactional
-    public Booking create(String name, String phone, LocalDate date, LocalTime time, Integer guests) {
+    public Booking create(String name, String phone, LocalDate date, LocalTime time, int guests) {
+        if (guests > GUEST_LIMIT) {
+            throw new RuntimeException();
+        }
+        var count = repository.getActiveBookingCount(date, time);
+        if (count >= SLOT_LIMIT) {
+            throw new RuntimeException();
+        }
         var booking = new Booking(name, phone, date, time, guests);
         repository.save(booking);
         return booking;
