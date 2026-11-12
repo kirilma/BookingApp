@@ -45,10 +45,11 @@ public class BookingController {
     public BookingCreatedResponse create(@Valid @RequestBody BookingCreateRequest request) {
         var name = request.name();
         var phone = request.phone();
-        var date = request.date();
-        var time = request.time();
+        var date = request.bookingDate();
+        var time = request.bookingTime();
         var guests = request.guests();
-        var booking = service.create(name, phone, date, time, guests);
+
+        var booking = service.createBooking(name, phone, date, time, guests);
         var response = mapper.toCreated(booking);
         return response;
     }
@@ -60,7 +61,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public BookingListResponse read(@RequestParam(required = false) LocalDate date) {
-        var bookings = service.get(date);
+        var bookings = service.getBookings(date);
         var response = mapper.toList(bookings);
         return response;
     }
@@ -73,7 +74,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public BookingInfoResponse read(@PathVariable Long id) {
-        var booking = service.get(id);
+        var booking = service.getBooking(id);
         var response = mapper.toInfo(booking);
         return response;
     }
@@ -87,7 +88,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     public BookingInfoResponse delete(@PathVariable Long id) {
-        var booking = service.cancel(id);
+        var booking = service.cancelBooking(id);
         var response = mapper.toInfo(booking);
         return response;
     }

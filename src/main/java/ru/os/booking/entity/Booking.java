@@ -40,12 +40,12 @@ public class Booking {
     private String phone;
 
     @NonNull
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+    @Column(name = "booking_date", nullable = false)
+    private LocalDate bookingDate;
 
     @NonNull
-    @Column(name = "time", nullable = false)
-    private LocalTime time;
+    @Column(name = "booking_time", nullable = false)
+    private LocalTime bookingTime;
 
     @NonNull
     @Column(name = "guests", nullable = false)

@@ -1,6 +1,7 @@
 package ru.os.booking;
 
 import java.time.Clock;
+import java.time.ZoneId;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +14,14 @@ public class BookingConfiguration {
 
     @Bean
     Clock clock() {
-        return Clock.systemDefaultZone();
+        var zone = ZoneId.of("Europe/Moscow");
+        return Clock.system(zone);
     }
 
     @Bean
     OpenAPI openApi() {
         var info = new Info().title("Booking API").version("1.0-SNAPSHOT");
-        var openapi = new OpenAPI().info(info);
-        return openapi;
+        var openApi = new OpenAPI().info(info);
+        return openApi;
     }
 }

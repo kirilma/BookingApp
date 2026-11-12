@@ -35,12 +35,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidBookingDataException.class)
-    public ProblemDetail handleInvalidInputDataException(InvalidBookingDataException e) {
+    public ProblemDetail handleInvalidBookingDataException(InvalidBookingDataException e) {
         var message = e.getMessage();
         log.warn(message);
 
         var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problem.setTitle("Invalid input data");
+        problem.setTitle("Invalid booking data");
         problem.setDetail("Some fields contain invalid data");
         problem.setProperty("errors", e.getErrors());
         return problem;
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
         log.warn(message);
 
         var problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problem.setTitle("Slot limit exceeded");
+        problem.setTitle("Slot is fully booked");
         problem.setDetail("No available slots for this date and time");
         return problem;
     }

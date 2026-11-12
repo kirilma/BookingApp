@@ -13,8 +13,8 @@ public record BookingInfoResponse(
         @Schema(type = "integer", example = "12") Long id,
         @Schema(example = "Анна Петрова") String name,
         @Schema(example = "+7 (999) 123-45-67") String phone,
-        LocalDate date,
-        @Schema(type = "string", example = "19:00") @JsonFormat(pattern = "HH:mm") LocalTime time,
+        LocalDate bookingDate,
+        @Schema(type = "string", example = "19:00") @JsonFormat(pattern = "HH:mm") LocalTime bookingTime,
         @Schema(type = "integer", example = "12") Integer guests,
         BookingStatus status,
         Instant createdAt

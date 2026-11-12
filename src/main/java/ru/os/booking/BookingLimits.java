@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 public record BookingLimits(
         @NotNull @Min(1) int days,
         @NotNull @Min(1) int guests,
-        @NotNull @Min(1) int slots,
+        @NotNull @Min(1) int bookings,
         @NotNull @DateTimeFormat(pattern = "HH:mm") LocalTime open,
         @NotNull @DateTimeFormat(pattern = "HH:mm") LocalTime closed
 ) {}

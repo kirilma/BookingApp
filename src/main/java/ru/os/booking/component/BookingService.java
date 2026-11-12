@@ -27,10 +27,11 @@ public class BookingService {
     private final Clock clock;
 
     @Transactional
-    public Booking create(String name, String phone, LocalDate date, LocalTime time, int guests) {
-        var errors = new ArrayList<String>();
+    public Booking createBooking(String name, String phone, LocalDate date, LocalTime time, int guests) {
         var normalized = PhoneUtils.normalize(phone);
         var now = LocalDateTime.now(clock);
+
+        var errors = new ArrayList<String>();
         if (normalized == null) {
             errors.add("phone must be +7XXXXXXXXXX or 8XXXXXXXXXX");
         }
@@ -55,9 +56,10 @@ public class BookingService {
         if (!errors.isEmpty()) {
             throw new InvalidBookingDataException(errors);
         }
+
         var count = repository.countActiveBookings(date, time);
-        if (limit.slots() <= count) {
-            throw new SlotLimitExceededException(limit.slots(), date, time);
+        if (limit.bookings() <= count) {
+            throw new SlotLimitExceededException(limit.bookings(), date, time);
         }
         var booking = new Booking(name, normalized, date, time, guests);
         repository.save(booking);
@@ -65,20 +67,20 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
-    public List<Booking> get(LocalDate date) {
-        var bookings = date == null ? repository.findAll() : repository.findAllByDate(date);
+    public List<Booking> getBookings(LocalDate date) {
+        var bookings = date == null ? repository.findAllOrdered() : repository.findAllByDateOrdered(date);
         return bookings;
     }
 
     @Transactional(readOnly = true)
-    public Booking get(long id) {
+    public Booking getBooking(long id) {
         var booking = repository.findById(id).orElseThrow(() -> new BookingNotFoundException(id));
         return booking;
     }
 
     @Transactional
-    public Booking cancel(long id) {
-        var booking = get(id);
+    public Booking cancelBooking(long id) {
+        var booking = getBooking(id);
         booking.cancel();
         repository.save(booking);
         return booking;
