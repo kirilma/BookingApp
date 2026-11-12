@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ru.os.booking.web.BookingCreateRequest;
 import ru.os.booking.web.BookingCreatedResponse;
@@ -33,18 +34,15 @@ public class BookingController {
     private final BookingService service;
     private final BookingMapper mapper;
 
-    @Operation(
-            summary = "Создать бронирование",
-            description = "Создает новое бронирование на указанную дату и время."
-    )
+    @Operation(summary = "Создать бронирование", description = "Создает новое бронирование на указанную дату и время.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Бронирование создано"),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные", content = @Content),
-            @ApiResponse(responseCode = "409", description = "Временной слот недоступен", content = @Content)
+        @ApiResponse(responseCode = "201", description = "Бронирование создано"),
+        @ApiResponse(responseCode = "400", description = "Некорректные данные", content = @Content),
+        @ApiResponse(responseCode = "409", description = "Временной слот недоступен", content = @Content)
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public BookingCreatedResponse create(@RequestBody BookingCreateRequest request) {
+    public BookingCreatedResponse create(@Valid @RequestBody BookingCreateRequest request) {
         var name = request.name();
         var phone = request.phone();
         var date = request.date();
@@ -55,12 +53,9 @@ public class BookingController {
         return response;
     }
 
-    @Operation(
-            summary = "Получить бронирования",
-            description = "Возвращает список бронирований на определенную дату или все бронирования."
-    )
+    @Operation(summary = "Получить бронирования", description = "Возвращает список бронирований на определенную дату или все бронирования.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Бронирования найдены")
+        @ApiResponse(responseCode = "200", description = "Бронирования найдены")
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
@@ -70,13 +65,10 @@ public class BookingController {
         return response;
     }
 
-    @Operation(
-            summary = "Получить бронирование",
-            description = "Возвращает бронирование по ID."
-    )
+    @Operation(summary = "Получить бронирование", description = "Возвращает бронирование по ID.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Бронирование найдено"),
-            @ApiResponse(responseCode = "404", description = "Бронирование не найдено", content = @Content)
+        @ApiResponse(responseCode = "200", description = "Бронирование найдено"),
+        @ApiResponse(responseCode = "404", description = "Бронирование не найдено", content = @Content)
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
@@ -86,14 +78,11 @@ public class BookingController {
         return response;
     }
 
-    @Operation(
-            summary = "Отменить бронирование",
-            description = "Отменяет бронирование по ID."
-    )
+    @Operation(summary = "Отменить бронирование", description = "Отменяет бронирование по ID.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Бронирование отменено"),
-            @ApiResponse(responseCode = "404", description = "Бронирование не найдено", content = @Content),
-            @ApiResponse(responseCode = "409", description = "Бронирование уже отменено", content = @Content)
+        @ApiResponse(responseCode = "200", description = "Бронирование отменено"),
+        @ApiResponse(responseCode = "404", description = "Бронирование не найдено", content = @Content),
+        @ApiResponse(responseCode = "409", description = "Бронирование уже отменено", content = @Content)
     })
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")

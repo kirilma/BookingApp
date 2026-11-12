@@ -14,6 +14,8 @@ services:
       BOOKING_LIMITS_DAYS: 90
       BOOKING_LIMITS_GUESTS: 12
       BOOKING_LIMITS_SLOTS: 10
+      BOOKING_LIMITS_OPEN: "12:00"
+      BOOKING_LIMITS_CLOSED: "22:00"
     volumes:
       - h2-data:/booking/data
 

@@ -11,18 +11,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record BookingCreateRequest(
-        @Schema(example = "Анна Петрова") @NotBlank
-        String name,
-
-        @Schema(example = "+7 (999) 123-45-67") @NotBlank
-        String phone,
-
-        @NotNull
-        LocalDate date,
-
-        @Schema(type = "string", example = "19:00") @JsonFormat(pattern = "HH:mm") @NotNull
-        LocalTime time,
-
-        @NotNull @Min(1)
-        Integer guests
+        @Schema(example = "Анна Петрова") @NotBlank String name,
+        @Schema(example = "+7 (999) 123-45-67") @NotBlank String phone,
+        @NotNull LocalDate date,
+        @Schema(type = "string", example = "19:00") @JsonFormat(pattern = "HH:mm") @NotNull LocalTime time,
+        @NotNull @Min(1) Integer guests
 ) {}

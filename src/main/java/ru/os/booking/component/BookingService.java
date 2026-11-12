@@ -2,6 +2,7 @@ package ru.os.booking.component;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +30,23 @@ public class BookingService {
     public Booking create(String name, String phone, LocalDate date, LocalTime time, int guests) {
         var errors = new ArrayList<String>();
         var normalized = PhoneUtils.normalize(phone);
+        var now = LocalDateTime.now(clock);
         if (normalized == null) {
             errors.add("phone must be +7XXXXXXXXXX or 8XXXXXXXXXX");
         }
-        var now = LocalDate.now(clock);
-        if (now.isAfter(date) || now.plusDays(limit.days()).isBefore(date)) {
+        if (now.toLocalDate().isAfter(date) || now.toLocalDate().plusDays(limit.days()).isBefore(date)) {
             var message = "date must be between now and %s days ahead".formatted(limit.days());
             errors.add(message);
         }
-        if (LocalTime.now(clock).isAfter(time) || time.getMinute() != 0 || time.getSecond() != 0) {
-            errors.add("time must be after now and contain zero minutes and seconds");
+        if (now.toLocalDate().isEqual(date) && now.toLocalTime().isAfter(time)) {
+            errors.add("time must be after now");
+        }
+        if (time.getMinute() != 0 || time.getSecond() != 0) {
+            errors.add("time must contain zero minutes and seconds");
+        }
+        if (limit.open().isAfter(time) || limit.closed().isBefore(time)) {
+            var message = "time must be between %s and %s".formatted(limit.open(), limit.closed());
+            errors.add(message);
         }
         if (limit.guests() < guests) {
             var message = "guest count must be less than %s".formatted(limit.guests());
@@ -68,7 +76,7 @@ public class BookingService {
         return booking;
     }
 
-    @Transactional 
+    @Transactional
     public Booking cancel(long id) {
         var booking = get(id);
         booking.cancel();
