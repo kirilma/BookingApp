@@ -21,18 +21,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ru.os.booking.web.BookingCreateRequest;
-import ru.os.booking.web.BookingCreatedResponse;
 import ru.os.booking.web.BookingInfoResponse;
 import ru.os.booking.web.BookingListResponse;
+import ru.os.booking.web.BookingResponseMapper;
 
 @Tag(name = "Booking", description = "Управление бронированиями")
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/bookings")
+@RequestMapping("/bookings")
 @RestController
 public class BookingController {
 
     private final BookingService service;
-    private final BookingMapper mapper;
+    private final BookingResponseMapper mapper;
 
     @Operation(summary = "Создать бронирование", description = "Создает новое бронирование на указанную дату и время.")
     @ApiResponses({
@@ -42,7 +42,7 @@ public class BookingController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public BookingCreatedResponse create(@Valid @RequestBody BookingCreateRequest request) {
+    public BookingInfoResponse createBooking(@Valid @RequestBody BookingCreateRequest request) {
         var name = request.name();
         var phone = request.phone();
         var date = request.bookingDate();
@@ -50,7 +50,7 @@ public class BookingController {
         var guests = request.guests();
 
         var booking = service.createBooking(name, phone, date, time, guests);
-        var response = mapper.toCreated(booking);
+        var response = mapper.toInfo(booking);
         return response;
     }
 
@@ -60,7 +60,7 @@ public class BookingController {
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public BookingListResponse read(@RequestParam(required = false) LocalDate date) {
+    public BookingListResponse getBookings(@RequestParam(required = false) LocalDate date) {
         var bookings = service.getBookings(date);
         var response = mapper.toList(bookings);
         return response;
@@ -73,7 +73,7 @@ public class BookingController {
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public BookingInfoResponse read(@PathVariable Long id) {
+    public BookingInfoResponse getBooking(@PathVariable Long id) {
         var booking = service.getBooking(id);
         var response = mapper.toInfo(booking);
         return response;
@@ -87,7 +87,7 @@ public class BookingController {
     })
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
-    public BookingInfoResponse delete(@PathVariable Long id) {
+    public BookingInfoResponse cancelBooking(@PathVariable Long id) {
         var booking = service.cancelBooking(id);
         var response = mapper.toInfo(booking);
         return response;

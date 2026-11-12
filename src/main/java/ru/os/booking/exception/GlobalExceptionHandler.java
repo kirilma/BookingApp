@@ -1,59 +1,60 @@
 package ru.os.booking.exception;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Order(2)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BookingAlreadyCancelledException.class)
-    public ProblemDetail handleBookingAlreadyCancelledException(BookingAlreadyCancelledException e) {
-        var message = e.getMessage();
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        var errors = e.getBindingResult().getFieldErrors().stream().map(er -> {
+            var field = er.getField();
+            var message = er.getDefaultMessage();
+            return "%s: %s".formatted(field, message);
+        }).toList();
+        var message = "Invalid request data: %s".formatted(errors);
         log.warn(message);
 
-        var problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problem.setTitle("Booking already cancelled");
-        problem.setProperty("id", e.getId());
+        var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle("Invalid request data");
+        problem.setDetail("Some arguments contain invalid data");
+        problem.setProperty("errors", errors);
         return problem;
     }
 
-    @ExceptionHandler(BookingNotFoundException.class)
-    public ProblemDetail handleBookingNotFoundException(BookingNotFoundException e) {
-        var message = e.getMessage();
-        log.warn(message);
-
-        var problem = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        problem.setTitle("Booking not found");
-        problem.setProperty("id", e.getId());
-        return problem;
-    }
-
-    @ExceptionHandler(InvalidBookingDataException.class)
-    public ProblemDetail handleInvalidBookingDataException(InvalidBookingDataException e) {
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         var message = e.getMessage();
         log.warn(message);
 
         var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problem.setTitle("Invalid booking data");
-        problem.setDetail("Some fields contain invalid data");
-        problem.setProperty("errors", e.getErrors());
+        problem.setTitle("Invalid request parameter");
+        var parameter = e.getName();
+        problem.setDetail("Parameter '%s' has an invalid format".formatted(parameter));
+        problem.setProperty("parameter", parameter);
         return problem;
     }
 
-    @ExceptionHandler(SlotLimitExceededException.class)
-    public ProblemDetail handleSlotLimitExceededException(SlotLimitExceededException e) {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleUnreadableBody(HttpMessageNotReadableException e) {
         var message = e.getMessage();
         log.warn(message);
 
-        var problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problem.setTitle("Slot is fully booked");
-        problem.setDetail("No available slots for this date and time");
+        var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle("Invalid request body");
+        problem.setDetail("Request body is missing or contains invalid JSON or field values");
         return problem;
     }
 

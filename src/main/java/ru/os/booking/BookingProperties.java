@@ -10,8 +10,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 @Validated
-@ConfigurationProperties(prefix = "booking.limits")
-public record BookingLimits(
+@ConfigurationProperties(prefix = "booking.properties")
+public record BookingProperties(
         @NotNull @Min(1) int days,
         @NotNull @Min(1) int guests,
         @NotNull @Min(1) int bookings,

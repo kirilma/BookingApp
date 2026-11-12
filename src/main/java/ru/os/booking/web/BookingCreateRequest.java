@@ -13,9 +13,31 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record BookingCreateRequest(
-        @Schema(example = "Анна Петрова") @Pattern(regexp = "[A-Za-zА-Яа-яЁё -]+") @Size(min = 2, max = 50) @NotBlank String name,
-        @Schema(example = "+7 (999) 123-45-67") @NotBlank String phone,
-        @NotNull LocalDate bookingDate,
-        @Schema(type = "string", example = "19:00") @JsonFormat(pattern = "HH:mm") @NotNull LocalTime bookingTime,
-        @NotNull @Min(1) Integer guests
-) {}
+        @Schema(example = "Анна Петрова")
+        @Pattern(regexp = "[A-Za-zА-Яа-яЁё -]+")
+        @Size(min = 2, max = 50)
+        @NotBlank String name,
+
+        @Schema(example = "+7 (999) 123-45-67")
+        @NotBlank
+        String phone,
+
+        @NotNull
+        LocalDate bookingDate,
+
+        @Schema(type = "string", example = "19:00")
+        @JsonFormat(pattern = "HH:mm")
+        @NotNull
+        LocalTime bookingTime,
+
+        @Schema(type = "integer", example = "12")
+        @NotNull
+        @Min(1)
+        Integer guests
+) {
+
+    public BookingCreateRequest {
+        name = name == null ? null : name.trim();
+        phone = phone == null ? null : phone.trim();
+    }
+}
