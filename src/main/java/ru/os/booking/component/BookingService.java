@@ -10,7 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ru.os.booking.entity.Booking;
-import ru.os.booking.exception.InvalidInputDataException;
+import ru.os.booking.exception.BookingNotFoundException;
+import ru.os.booking.exception.InvalidBookingDataException;
 import ru.os.booking.exception.SlotLimitExceededException;
 import ru.os.booking.util.PhoneUtils;
 
@@ -44,11 +45,11 @@ public class BookingService {
             errors.add(message);
         }
         if (!errors.isEmpty()) {
-            throw new InvalidInputDataException(errors);
+            throw new InvalidBookingDataException(errors);
         }
         var count = repository.countActiveBookings(date, time);
         if (count >= SLOT_LIMIT) {
-            throw new SlotLimitExceededException(SLOT_LIMIT);
+            throw new SlotLimitExceededException(SLOT_LIMIT, date, time);
         }
         var booking = new Booking(name, normalized, date, time, guests);
         repository.save(booking);
@@ -63,7 +64,7 @@ public class BookingService {
 
     @Transactional(readOnly = true)
     public Booking get(long id) {
-        var booking = repository.findById(id).orElseThrow(RuntimeException::new);
+        var booking = repository.findById(id).orElseThrow(() -> new BookingNotFoundException(id));
         return booking;
     }
 

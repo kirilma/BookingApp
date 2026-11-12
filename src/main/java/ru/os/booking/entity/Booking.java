@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import ru.os.booking.exception.BookingAlreadyCancelledException;
 
 @Getter
 @RequiredArgsConstructor
@@ -65,7 +66,7 @@ public class Booking {
 
     public void cancel() {
         if (this.status == BookingStatus.CANCELLED) {
-            throw new RuntimeException();
+            throw new BookingAlreadyCancelledException(this.id);
         }
         this.status = BookingStatus.CANCELLED;
     }
