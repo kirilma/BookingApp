@@ -1,11 +1,15 @@
 # build
-FROM maven:3.9.11-eclipse-temurin-21 AS build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /booking/build
 
+COPY mvnw ./mvnw
+COPY .mvn ./.mvn
 COPY pom.xml ./pom.xml
-RUN mvn dependency:go-offline -B
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline -B
+
 COPY src ./src
-RUN mvn clean package
+RUN ./mvnw clean package
 
 # run
 FROM eclipse-temurin:21-jre-alpine
