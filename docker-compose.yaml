@@ -11,6 +11,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: ""
       SPRING_H2_CONSOLE_ENABLED: "true"
       SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS: "true"
+      BOOKING_LIMITS_DAYS: 90
+      BOOKING_LIMITS_GUESTS: 12
+      BOOKING_LIMITS_SLOTS: 10
     volumes:
       - h2-data:/booking/data
 

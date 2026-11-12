@@ -1,5 +1,6 @@
 package ru.os.booking.component;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import ru.os.booking.BookingLimits;
 import ru.os.booking.entity.Booking;
 import ru.os.booking.exception.BookingNotFoundException;
 import ru.os.booking.exception.InvalidBookingDataException;
@@ -19,11 +21,9 @@ import ru.os.booking.util.PhoneUtils;
 @Service
 public class BookingService {
 
-    private static final int DAY_LIMIT = 90;
-    private static final int GUEST_LIMIT = 12;
-    private static final int SLOT_LIMIT = 10;
-
     private final BookingRepository repository;
+    private final BookingLimits limit;
+    private final Clock clock;
 
     @Transactional
     public Booking create(String name, String phone, LocalDate date, LocalTime time, int guests) {
@@ -32,24 +32,24 @@ public class BookingService {
         if (normalized == null) {
             errors.add("phone must be +7XXXXXXXXXX or 8XXXXXXXXXX");
         }
-        var now = LocalDate.now();
-        if (now.isAfter(date) || now.plusDays(DAY_LIMIT).isBefore(date)) {
-            var message = "date must be between noew and %s days ahead".formatted(DAY_LIMIT);
+        var now = LocalDate.now(clock);
+        if (now.isAfter(date) || now.plusDays(limit.days()).isBefore(date)) {
+            var message = "date must be between now and %s days ahead".formatted(limit.days());
             errors.add(message);
         }
-        if (LocalTime.now().isAfter(time) || time.getMinute() != 0) {
-            errors.add("time must be after now and contain zero minutes");
+        if (LocalTime.now(clock).isAfter(time) || time.getMinute() != 0 || time.getSecond() != 0) {
+            errors.add("time must be after now and contain zero minutes and seconds");
         }
-        if (guests > GUEST_LIMIT) {
-            var message = "guest count must be less than %s".formatted(GUEST_LIMIT);
+        if (limit.guests() < guests) {
+            var message = "guest count must be less than %s".formatted(limit.guests());
             errors.add(message);
         }
         if (!errors.isEmpty()) {
             throw new InvalidBookingDataException(errors);
         }
         var count = repository.countActiveBookings(date, time);
-        if (count >= SLOT_LIMIT) {
-            throw new SlotLimitExceededException(SLOT_LIMIT, date, time);
+        if (limit.slots() <= count) {
+            throw new SlotLimitExceededException(limit.slots(), date, time);
         }
         var booking = new Booking(name, normalized, date, time, guests);
         repository.save(booking);
