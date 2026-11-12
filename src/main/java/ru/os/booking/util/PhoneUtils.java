@@ -11,9 +11,7 @@ public final class PhoneUtils {
 
     public static String normalize(String raw) {
         var clean = SEPARATORS.matcher(raw).replaceAll("");
-        if (!PHONE.matcher(clean).matches()) {
-            return null;
-        }
-        return "+7" + clean.substring(clean.length() - 10);
+        var normalized = PHONE.matcher(clean).matches() ? "+7" + clean.substring(clean.length() - 10) : null;
+        return normalized;
     }
 }
