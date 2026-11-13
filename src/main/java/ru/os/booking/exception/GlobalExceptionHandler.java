@@ -6,6 +6,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -68,6 +69,18 @@ public class GlobalExceptionHandler {
         problem.setTitle("Invalid request body");
         problem.setDetail("Unable to read request body");
         problem.setProperty("errors", List.of(error));
+        return problem;
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ProblemDetail handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        var message = e.getMessage();
+        log.warn(message);
+
+        var problem = ProblemDetail.forStatus(HttpStatus.METHOD_NOT_ALLOWED);
+        problem.setTitle("Method not allowed");
+        var method = e.getMethod();
+        problem.setDetail("HTTP method '%s' is not supported for this endpoint".formatted(method));
         return problem;
     }
 
