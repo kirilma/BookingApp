@@ -20,7 +20,7 @@ public class BookingExceptionHandler {
 
         var problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problem.setTitle("Already cancelled");
-        problem.setDetail("Booking already cancelled");
+        problem.setDetail("Booking is already cancelled");
         problem.setProperty("id", e.getId());
         return problem;
     }
@@ -55,8 +55,8 @@ public class BookingExceptionHandler {
         log.warn(message);
 
         var problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problem.setTitle("Slot is fully booked");
-        problem.setDetail("No available slots for this date and time");
+        problem.setTitle("Unavailable slot");
+        problem.setDetail("Slot is fully booked");
         return problem;
     }
 }

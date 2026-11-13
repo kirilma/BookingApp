@@ -1,5 +1,7 @@
 package ru.os.booking.exception;
 
+import java.util.List;
+
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,7 @@ public class GlobalExceptionHandler {
             var message = er.getDefaultMessage();
             return "%s: %s".formatted(field, message);
         }).toList();
+
         var message = "Invalid request data: %s".formatted(errors);
         log.warn(message);
 
@@ -39,22 +44,30 @@ public class GlobalExceptionHandler {
         var message = e.getMessage();
         log.warn(message);
 
+        var error = "%s: invalid format".formatted(e.getName());
+
         var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problem.setTitle("Invalid request parameter");
-        var parameter = e.getName();
-        problem.setDetail("Parameter '%s' has an invalid format".formatted(parameter));
-        problem.setProperty("parameter", parameter);
+        problem.setDetail("Invalid format of parameter");
+        problem.setProperty("errors", List.of(error));
         return problem;
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ProblemDetail handleUnreadableBody(HttpMessageNotReadableException e) {
+    public ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         var message = e.getMessage();
         log.warn(message);
 
+        var error = "body: request body is missing or malformed";
+        if (e.getCause() instanceof JsonMappingException mapping && !mapping.getPath().isEmpty()) {
+            var field = mapping.getPath().get(0).getFieldName();
+            error = field != null ? "%s: invalid value or format".formatted(field) : error;
+        }
+
         var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problem.setTitle("Invalid request body");
-        problem.setDetail("Request body is missing or contains invalid JSON or field values");
+        problem.setDetail("Unable to read request body");
+        problem.setProperty("errors", List.of(error));
         return problem;
     }
 
