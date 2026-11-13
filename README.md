@@ -47,7 +47,7 @@ java -jar target/booking.jar --spring.datasource.url=jdbc:h2:file:./target/data/
 - Документация: [Swagger UI](http://localhost:8080/swagger-ui.html), [OpenAPI JSON](http://localhost:8080/v3/api-docs)
 - Консоль БД: [H2 Console](http://localhost:8080/h2-console)
 
-Данные подключения к консоли H2: пользователь `sa` с пустым паролем.
+Данные подключения к консоли H2: JDBC URL — jdbc:h2:/booking/data/db (через Docker) или jdbc:h2:file:./target/data/db (локально); пользователь — `sa` с пустым паролем.
 
 ## Принятые решения
 
